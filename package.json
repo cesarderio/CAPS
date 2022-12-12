@@ -1,0 +1,25 @@
+{
+  "name": "caps",
+  "version": "1.0.0",
+  "description": "System that emulates a real world supply chain",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --verbose --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cesarderio/CAPS.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cesarderio/CAPS/issues"
+  },
+  "homepage": "https://github.com/cesarderio/CAPS#readme",
+  "dependencies": {
+    "chance": "^1.1.9",
+    "eslint": "^8.29.0",
+    "jest": "^29.3.1"
+  }
+}
