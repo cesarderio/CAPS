@@ -27,10 +27,8 @@ function Driver(){
   // eventPool.emit('SEND_MESSAGE', {test: 'You\'ve Got This!'});
 }
 
-
 eventEmitter.on('SEND_MESSAGE', Vendor);
 eventEmitter.on('SEND_MESSAGE', Driver);
-
 
 Vendor();
 setInterval(() => {

@@ -23,3 +23,7 @@ System that emulates a real world supply chain
   package.
 
 * As a developer, I want to create an event driven system so that I can write code that happens in response to events, in real time.
+
+### UML
+
+![UML](./src/assets/UML.png)
