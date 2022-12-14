@@ -11,6 +11,6 @@ function logger(event, payload){
 }
 
 
-eventPool.on('PICKUP',(payload)=> logger('PICKUP', payload));
+eventPool.on('PICKUP',(payload)=> logger('PICKUP_READY', payload));
 eventPool.on('IN_TRANSIT',(payload)=> logger('IN_TRANSIT', payload));
 eventPool.on('DELIVERED',(payload)=> logger('DELIVERED', payload));

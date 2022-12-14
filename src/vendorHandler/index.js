@@ -2,7 +2,7 @@
 
 const eventPool = require('../eventPool');
 
-const { createOrder, thankTheDriver} = require('./handlers');
+const { createOrder, thankTheDriver} = require('./vendorHandler');
 
 eventPool.on('DELIVERED', thankTheDriver);
 
