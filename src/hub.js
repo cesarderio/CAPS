@@ -1,7 +1,16 @@
 'use strict';
 
-const Event = require('events');
+const eventPool = require('./eventPool');
+require('./driver');
+require('./vendor');
 
-const eventEmitter = new Event();
 
-module.exports = eventEmitter;
+function logger(event, payload){
+  const time = new Date();
+  console.log('EVENT', {event, time, payload});
+}
+
+
+eventPool.on('PICKUP',(payload)=> logger('PICKUP_READY', payload));
+eventPool.on('IN_TRANSIT',(payload)=> logger('IN_TRANSIT', payload));
+eventPool.on('DELIVERED',(payload)=> logger('DELIVERED', payload));
