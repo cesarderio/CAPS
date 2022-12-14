@@ -4,7 +4,7 @@
   "description": "System that emulates a real world supply chain",
   "main": "index.js",
   "scripts": {
-    "test": "jest --verbose --coverage"
+    "test": "jest --verbose --coverage --detectOpenHandles"
   },
   "repository": {
     "type": "git",
