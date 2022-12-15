@@ -1,10 +1,11 @@
 'use strict';
 
+let socket = require('../socket-client');
 const { createOrder, thankTheDriver } = require('./vendorHandler');
 // const eventPool = require('../eventPool');
-const eventPool = require('../eventPool');
+// const eventPool = require('../eventPool');
 
-jest.mock('../eventPool.js', () => {
+jest.mock('../socket-client', () => {
   return {
     on: jest.fn(),
     emit: jest.fn(),
@@ -22,7 +23,7 @@ describe('Vendor', () => {
     };
     createOrder(payload);
     expect(console.log).toHaveBeenCalledWith(`Vendor: order: test123 ready for pickup`);
-    expect(eventPool.emit).toHaveBeenCalledWith('PICKUP_READY', payload);
+    expect(socket.emit).toHaveBeenCalledWith('PICKUP_READY', payload);
   });
   it('thanks the driver', () => {
     thankTheDriver({
