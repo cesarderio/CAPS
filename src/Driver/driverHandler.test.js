@@ -1,19 +1,12 @@
 'use strict';
 
-const eventPool = require('../eventPool');
-
-
+// const eventPool = require('../eventPool');
+let socket = require('../socket-client');
 const { orderInTransit, deliveryHandler } = require('./driverHandler');
-const { io } = require('socket.io-client');
-const socket = io('http://localhost:3001/caps');
+// const { io } = require('socket.io-client');
+// const socket = io('http://localhost:3001/caps');
 
-
-jest.mock(socket), 
-
-
-
-
-jest.mock('../eventPool.js', () => {
+jest.mock('../socket-client', () => {
   return {
     on: jest.fn(),
     emit: jest.fn(),
@@ -29,9 +22,9 @@ describe('Driver', () => {
       customer: 'Raphael',
       address: 'home',
     };
-    orderInTransit(payload);
+    orderInTransit(socket)(payload);
     expect(console.log).toHaveBeenCalledWith('Driver: order: test123 picked up');
-    expect(eventPool.emit).toHaveBeenCalledWith('IN_TRANSIT', payload);
+    expect(socket.emit).toHaveBeenCalledWith('IN_TRANSIT', payload);
   });
   it('delivers as expected', () => {
     const payload = {
@@ -40,8 +33,8 @@ describe('Driver', () => {
       customer: 'Raphael',
       address: 'home',
     };
-    deliveryHandler(payload);
-    expect(console.log).toHaveBeenCalledWith(`Driver: test123 delivered`);
-    expect(eventPool.emit).toHaveBeenCalledWith('DELIVERED', payload);
+    deliveryHandler(socket)(payload);
+    expect(console.log).toHaveBeenCalledWith('Driver: test123 delivered');
+    expect(socket.emit).toHaveBeenCalledWith('DELIVERED', payload);
   });
 });

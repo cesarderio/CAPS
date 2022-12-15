@@ -2,9 +2,10 @@
 
 const { createOrder, thankTheDriver } = require('./vendorHandler');
 // const eventPool = require('../eventPool');
-const eventPool = require('../eventPool');
+let socket = require('../socket-client');
 
-jest.mock('../eventPool.js', () => {
+
+jest.mock('../socket-client', () => {
   return {
     on: jest.fn(),
     emit: jest.fn(),
@@ -20,9 +21,9 @@ describe('Vendor', () => {
       customer: 'Raphael',
       address: 'home',
     };
-    createOrder(payload);
-    expect(console.log).toHaveBeenCalledWith(`Vendor: order: test123 ready for pickup`);
-    expect(eventPool.emit).toHaveBeenCalledWith('PICKUP_READY', payload);
+    createOrder(socket)(payload);
+    expect(console.log).toHaveBeenCalledWith('Vendor: order: test123 ready for pickup');
+    expect(socket.emit).toHaveBeenCalledWith('PICKUP_READY', payload);
   });
   it('thanks the driver', () => {
     thankTheDriver({

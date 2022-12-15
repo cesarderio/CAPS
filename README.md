@@ -41,3 +41,5 @@ As a developer, I want to create network event driven system using Socket.io so 
 ### Socket UML
 
 ![UML](./src/assets/Socket_UML.png)
+
+### Queue UML
