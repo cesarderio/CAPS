@@ -22,7 +22,7 @@ describe('Driver', () => {
       customer: 'Raphael',
       address: 'home',
     };
-    orderInTransit(payload);
+    orderInTransit(socket)(payload);
     expect(console.log).toHaveBeenCalledWith('Driver: order: test123 picked up');
     expect(socket.emit).toHaveBeenCalledWith('IN_TRANSIT', payload);
   });
@@ -33,7 +33,7 @@ describe('Driver', () => {
       customer: 'Raphael',
       address: 'home',
     };
-    deliveryHandler(payload);
+    deliveryHandler(socket)(payload);
     expect(console.log).toHaveBeenCalledWith('Driver: test123 delivered');
     expect(socket.emit).toHaveBeenCalledWith('DELIVERED', payload);
   });
