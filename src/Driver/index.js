@@ -6,6 +6,8 @@ const { orderInTransit, deliveryHandler } = require('./driverHandler');
 
 socket.on('PICKUP_READY', driverHandler);
 
+socket.emit('JOIN', 'rPS');
+
 function driverHandler(payload) {
   setTimeout(() => {
     orderInTransit(payload);

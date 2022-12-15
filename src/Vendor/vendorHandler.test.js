@@ -23,7 +23,7 @@ describe('Vendor', () => {
     };
     createOrder(socket)(payload);
     expect(console.log).toHaveBeenCalledWith('Vendor: order: test123 ready for pickup');
-    expect(socket.emit).toHaveBeenCalledWith('PICKUP_READY', payload);
+    expect(socket.emit).toHaveBeenCalledWith('PICKUP', payload);
   });
   it('thanks the driver', () => {
     thankTheDriver({

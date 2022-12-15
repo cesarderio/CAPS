@@ -6,6 +6,7 @@ const PORT = process.env.PORT || 3002;
 
 const Queue = require('./lib/queue');
 const server = new Server(PORT);
+
 const pickupQueue = new Queue();
 const deliveryQueue = new Queue();
 
@@ -51,15 +52,15 @@ caps.on('connection', (socket) => {
   });
 
   socket.on('DELIVERED', (payload) => {
-    let currentQueue = deliveryQueue.read(payload.queueId);
-    if(currentQueue && currentQueue.data){
-      Object.keys(currentQueue.data).forEach(queueId => {
-        socket.emit('DELIVERED', currentQueue.read(queueId));
-        //this might be useful for lab 13
-        // socket.to(messageId.queueId).emit('MESSAGE');
-        socket.to(payload.queueId).emit('RECEIVED', payload);
-      });
+    console.log('Driver: has delivered order');
+
+    let currentQueue = deliveryQueue.read(payload.vendorId);
+    if(!currentQueue){
+      let queueKey = deliveryQueue.store(payload.vendorId, new Queue());
+      currentQueue = deliveryQueue.read(queueKey);
     }
+    currentQueue.store(payload.messageId, payload);
+    socket.to(payload.vendorId).broadcast.emit('DELIVERED', payload);
   });
 
   socket.on('COMPLETED', (payload) => {
@@ -70,7 +71,7 @@ caps.on('connection', (socket) => {
     let orderId = currentQueue.remove(payload.queueId);
   });
   
-  socket.on('ORDER_PICKUP', (payload) => {
+  socket.on('PICKUP', (payload) => {
     let orderId = currentQueue.remove(payload.queueId);
     let currentQueue = pickupQueue.read(payload.queueId);
     if(currentQueue && currentQueue.data){
