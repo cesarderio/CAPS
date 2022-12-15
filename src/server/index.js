@@ -5,7 +5,7 @@ const { Server } = require('socket.io');
 const PORT = process.env.PORT || 3002;
 const Queue = require('./lib/queue');
 const server = new Server(PORT);
-
+const pickupQueue = new Queue();
 const deliveryQueue = new Queue();
 
 // create a namespace
@@ -20,47 +20,61 @@ caps.on('connection', (socket) => {
   // server.on('connection', (socket) => {
   //   console.log('Socket connected to Event Server!', socket.id);
   socket.on('JOIN', (queueId) => {
-    console.log('These are the rooms', socket.queueId);
+    console.log('These are the rooms', socket.rooms);
     socket.join(queueId);
     console.log('Joined the room: ', queueId);
     socket.emit('JOIN', queueId);
   });  
 
-  socket.on('MESSAGE', (payload) => {
+  socket.on('ORDER_CONFIRM', (payload) => {
     console.log('Server MESSAGE event', payload);
 
-    let currentQueue = messageQueue.read(payload.queueId);
+    let currentQueue = pickupQueue.read(payload.queueId);
     if(!currentQueue){
-      let queueKey = messageQueue.store(payload.queueId, new Queue());
-      currentQueue = messageQueue.read(queueKey);
+      let queueKey = pickupQueue.store(payload.queueId, new Queue());
+      currentQueue = pickupQueue.read(queueKey);
     }
-    currentQueue.store(payload.messageId, payload);
+    currentQueue.store(payload.orderId, payload);
     
-    socket.broadcast.emit('MESSAGE', payload); 
+    socket.broadcast.emit('PICKUP', payload); 
   });
 
-  socket.on('RECEIVED', (payload) => {
-    console.log('Server RECEIVED event', payload );
-
-    let currentQueue = messageQueue.read(payload.queueId);
+  socket.on('IN-TRANSIT', (payload) => {
+    let currentQueue = pickupQueue.read(payload.queueId);
     if(!currentQueue){
-      throw new Error('We have messages but no Queue!');
+      throw new Error('Message receive, Queue not found');
     }
-    let message = currentQueue.remove(payload.messageId);
-    socket.to(payload.queueId).emit('RECEIVED', message);
+    let orderId = currentQueue.remove(payload.queueId);
+    socket.to(payload.queueId).emit('RECEIVED', payload);
   });
 
-  socket.on('GET_MESSAGES', (payload) => {
-    console.log('messages were grabbed');
-    let currentQueue = messageQueue.read(payload.queueId);
+  socket.on('DELIVERED', (payload) => {
+    let currentQueue = deliveryQueue.read(payload.queueId);
     if(currentQueue && currentQueue.data){
-      Object.keys(currentQueue.data).forEach(messageId => {
-        socket.emit('MESSAGE', currentQueue.read(messageId));
+      Object.keys(currentQueue.data).forEach(queueId => {
+        socket.emit('DELIVERED', currentQueue.read(queueId));
         //this might be useful for lab 13
         // socket.to(messageId.queueId).emit('MESSAGE');
-        // socket.to(messageId.queueId).emit('RECEIVED');
+        socket.to(payload.queueId).emit('RECEIVED', payload);
       });
     }
   });
 
+  socket.on('COMPLETED', (payload) => {
+    let currentQueue = deliveryQueue.read(payload.queueId);
+    if(!currentQueue){
+      throw new Error('Message receive, Queue not found');
+    }
+    let orderId = currentQueue.remove(payload.queueId);
+  });
+  
+  socket.on('ORDER_PICKUP', (payload) => {
+    let orderId = currentQueue.remove(payload.queueId);
+    let currentQueue = pickupQueue.read(payload.queueId);
+    if(currentQueue && currentQueue.data){
+      Object.keys(currentQueue.data).forEach(queueId => {
+        socket.emit('PICKUP', currentQueue.read(orderId));
+      });
+    }
+  });
 });
