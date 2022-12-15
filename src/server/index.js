@@ -2,19 +2,16 @@
 
 require('dotenv'.config());
 const { Server } = require('socket.io');
-// const socket = require('../socket-client');
 const PORT = process.env.PORT || 3002;
 const Queue = require('./lib/queue');
-
 const server = new Server(PORT);
-// const messages = server.of('./messages');
-const messageQueue = new Queue();
+
+const deliveryQueue = new Queue();
 
 // create a namespace
 const caps = server.of('/caps');
 
 
-// caps.on('connection', (socket) => {
 caps.on('connection', (socket) => {
   socket.onAny((event, payload) => console.log({event, payload}));
   console.log('Socket connected to caps namespace', socket.id);
