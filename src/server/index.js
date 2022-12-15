@@ -16,12 +16,14 @@ const caps = server.of('/caps');
 
 // caps.on('connection', (socket) => {
 messages.on('connection', (socket) => {
+  socket.onAny((event, payload) => console.log({event, payload}));
   console.log('Socket connected to caps namespace', socket.id);
 
   //connect server to clients aka listen to clients
   // server.on('connection', (socket) => {
   //   console.log('Socket connected to Event Server!', socket.id);
   socket.on('JOIN', (queueId) => {
+    console.log('These are the rooms', socket.queueId);
     socket.join(queueId);
     console.log('Joined the room: ', queueId);
     socket.emit('JOIN', queueId);
