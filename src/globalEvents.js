@@ -1,21 +1,26 @@
 'use strict';
 
-const eventEmitter = require('./hub');
+const eventPool = require('./hub');
+
 
 // require handlers
-const pickUpHandler = require('./pickUpHandler/pickUpHandler');
-const toBeDeliveredHandler = require('./toBeDeliveredHandler/toBeDeliveredHandler');
-const inTransitHandler = require('./inTransitHandler/inTransitHandler');
-const deliveredHandler = require('./deliveredHandler/deliveredHandler');
+require('./vendorHandler/vendorHandler');
+require('./driverHandler/driverHandler');
+
+eventPool.on('PICKUP',(payload)=> logger('PICKUP', payload));
+eventPool.on('IN_TRANSIT',(payload)=> logger('IN_TRANSIT', payload));
+eventPool.on('DELIVERED',(payload)=> logger('DELIVERED', payload));
+
+// eventEmitter.on('Package ready to be picked up', Date.now , pickUpHandler);
+// eventEmitter.on('Package ready to be delivered', Date.now , toBeDeliveredHandler);
+// eventEmitter.on('Package is in transit', Date.now ,inTransitHandler);
+// eventEmitter.on('Package has been delivered', Date.now, deliveredHandler);
 
 
-
-eventEmitter.on('Package ready to be picked up', Date.now , pickUpHandler);
-eventEmitter.on('Package ready to be delivered', Date.now , toBeDeliveredHandler);
-eventEmitter.on('Package is in transit', Date.now ,inTransitHandler);
-eventEmitter.on('Package has been delivered', Date.now, deliveredHandler);
-
-
+function logger(event, payload){
+  let time = new Date();
+  console.log('Event:', {event, time, payload});
+}
 
 // setInterval(() => {
 //   console.log('------new interval begins---------');
