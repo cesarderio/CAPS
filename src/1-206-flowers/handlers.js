@@ -9,8 +9,9 @@ const createOrder = (socket) => (payload = null) => {
     orderId: chance.guid(),
     customer: chance.name(),
     address: chance.address(),
-    queueId: this.store,
-    messageId: this.orderId,
+    vendorId: '1-206-flowers',
+    driverId: 'rPS',
+    messageId: chance.guid(),
   };
   console.log(`Vendor: order: ${payload.orderId} ready for pickup`);
   socket.emit('PICKUP_READY', payload);

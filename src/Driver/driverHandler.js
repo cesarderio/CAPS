@@ -1,16 +1,14 @@
 'use strict';
 
-
 const orderInTransit = (socket) =>(payload) => {
   // setTimeout(() => {
   console.log(`Driver: order: ${payload.orderId} picked up`);
   socket.emit('IN_TRANSIT', payload);
-  LET newPayload = {
+  let newPayload = {
     id: payload.driverId,
-    messageId: 
-
-  }
-  socket.emit('RECEIVED', payload);
+    messageId: payload.messageId,
+  };
+  socket.emit('RECEIVED', newPayload);
   // }, 2000);
 };
 
@@ -22,13 +20,5 @@ const deliveryHandler = (socket) => (payload) => {
   // }, 2000);
 };
 
-
 module.exports = { orderInTransit, deliveryHandler};
 
-
-// module.exports = (storeName) => {
-//   setTimeout(() => {
-//     console.log('HUB: Package to be picked up', storeName);
-//     eventEmitter.emit('PACKAGE', storeName);
-//   }, 1000);
-// };

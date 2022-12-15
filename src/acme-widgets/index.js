@@ -5,16 +5,18 @@
 let socket = require('../socket-client');
 const { createOrder, thankTheDriver} = require('./vendorHandler');
 
-socket.emit('JOIN', '1-206-flowers');
-socket.emit('GET_ALL', {queueId: '1-206-flowers'});
+socket.emit('JOIN', 'acme-widgets');
+socket.emit('GET_ALL', {id: 'acme-widgets'});
 
 const callForPickup = createOrder(socket);
+const handleThanks = thankTheDriver(socket);
 
-socket.on('DELIVERED', thankTheDriver);
+// socket.on('DELIVERED', thankTheDriver);
+socket.on('DELIVERED', (payload) => handleThanks(payload));
 
 setInterval(() => {
   console.log('-----New Interval!!-----');
   socket.emit('DELIVERED', thankTheDriver);
+  // createOrder(socket);
   callForPickup();
 }, 3000);
-
