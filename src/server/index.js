@@ -26,9 +26,7 @@ caps.on('connection', (socket) => {
     socket.emit('JOIN', queueId);
   });  
 
-  socket.on('ORDER_CONFIRM', (payload) => {
-    console.log('Server MESSAGE event', payload);
-
+  socket.on('RECEIVED', (payload) => {
     let currentQueue = pickupQueue.read(payload.queueId);
     if(!currentQueue){
       let queueKey = pickupQueue.store(payload.queueId, new Queue());
@@ -74,6 +72,16 @@ caps.on('connection', (socket) => {
     if(currentQueue && currentQueue.data){
       Object.keys(currentQueue.data).forEach(queueId => {
         socket.emit('PICKUP', currentQueue.read(orderId));
+      });
+    }
+  });
+
+  socket.on('GET_ALL', (payload) => {
+    let orderId = currentQueue.remove(payload.queueId);
+    let currentQueue = pickupQueue.read(payload.queueId);
+    if(currentQueue && currentQueue.data){
+      Object.keys(currentQueue.data).forEach(queueId => {
+        socket.emit('GET_ALL', currentQueue.read(orderId));
       });
     }
   });
