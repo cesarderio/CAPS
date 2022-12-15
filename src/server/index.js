@@ -3,10 +3,13 @@
 require('dotenv'.config());
 const { Server } = require('socket.io');
 const PORT = process.env.PORT || 3002;
+
 const Queue = require('./lib/queue');
 const server = new Server(PORT);
 const pickupQueue = new Queue();
 const deliveryQueue = new Queue();
+
+
 
 // create a namespace
 const caps = server.of('/caps');
@@ -15,6 +18,7 @@ const caps = server.of('/caps');
 caps.on('connection', (socket) => {
   socket.onAny((event, payload) => console.log({event, payload}));
   console.log('Socket connected to caps namespace', socket.id);
+
 
   //connect server to clients aka listen to clients
   // server.on('connection', (socket) => {
@@ -85,4 +89,21 @@ caps.on('connection', (socket) => {
       });
     }
   });
+
+  socket.on('PICKUP', (payload) => {
+    console.log(`Driver: order: ${payload.orderId} picked up`);
+    socket.broadcast.emit('PICKUP', payload);
+  });
+
+  socket.on('IN_TRANSIT', (payload) => {
+    console.log(`Driver: order: ${payload.orderId} in transit`, payload);
+  });
+
+  socket.on('DELIVERED', (payload) => {
+    console.log('Driver: order delivered: ', payload.orderId);
+    socket.broadcast.emit('DELIVERED', payload);
+  });
+
+
+
 });
