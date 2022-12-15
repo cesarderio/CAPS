@@ -2,11 +2,7 @@
 
 System that emulates a real world supply chain
 
-## Phase 2 Requirements
-
-In Phase 2, we’ll be changing the underlying networking implementation of our CAPS system from using node events to using a library called Socket.io so that clients can communicate over a network. Socket.io manages the connection pool for us, making broadcasting much easier to operate, and works well both on the terminal (between servers) and with web clients.
-
-The core functionality we’ve already built remains the same. The difference in this phase is that we’ll be creating a networking layer. As such, the user stories that speak to application functionality remain unchanged, but our developer story changes to reflect the work needed for refactoring.
+## Phase 3 Requirements
 
 ### The following user/developer stories detail the major functionality for this phase of the project
 
@@ -43,3 +39,5 @@ As a developer, I want to create network event driven system using Socket.io so 
 ![UML](./src/assets/Socket_UML.png)
 
 ### Queue UML
+
+![UML](./src/assets/queue.png)
