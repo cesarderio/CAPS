@@ -90,19 +90,19 @@ caps.on('connection', (socket) => {
     }
   });
 
-  socket.on('PICKUP', (payload) => {
-    console.log(`Driver: order: ${payload.orderId} picked up`);
-    socket.broadcast.emit('PICKUP', payload);
-  });
+  // socket.on('PICKUP', (payload) => {
+  //   console.log(`Driver: order: ${payload.orderId} picked up`);
+  //   socket.broadcast.emit('PICKUP', payload);
+  // });
 
-  socket.on('IN_TRANSIT', (payload) => {
-    console.log(`Driver: order: ${payload.orderId} in transit`, payload);
-  });
+  // socket.on('IN_TRANSIT', (payload) => {
+  //   console.log(`Driver: order: ${payload.orderId} in transit`, payload);
+  // });
 
-  socket.on('DELIVERED', (payload) => {
-    console.log('Driver: order delivered: ', payload.orderId);
-    socket.broadcast.emit('DELIVERED', payload);
-  });
+  // socket.on('DELIVERED', (payload) => {
+  //   console.log('Driver: order delivered: ', payload.orderId);
+  //   socket.broadcast.emit('DELIVERED', payload);
+  // });
 
 
 
