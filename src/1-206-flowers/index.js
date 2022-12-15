@@ -1,26 +1,20 @@
 'use strict';
 
-const { io } = require('socket.io-client');
-const socket = io('jttp://localhost:3001/caps');
-// const SOCKET_URL = process.env.SOCKET_URL || 'http://localhost:3002/caps';
+// const { io } = require('socket.io-client');
+// const socket = io('http://localhost:3001/caps');
+let socket = require('../socket-client');
+const { createOrder, thankTheDriver} = require('./vendorHandler');
 
-class Flowers() {
-  constructor(queueId) {
-    this.queueId = queueId;
-    this.socket = socket;
-    this.socket.emit('JOIN',queueId);
-    this.socket.on('JOIN', (id) => {
-      console.log('Joined Client Queue', id);
-    });
-  }
-  
-  publish(event, payload){
-    this.socket.emit(event, {...payload, queueId: this.queueId});
-  }
-  
-  subscribe(event, callback){
-    this.socket.on(event, callback);
-  }
-}
+socket.emit('JOIN', 'acme-widgets');
+socket.emit('GET_ALL', {queueId: 'acme-widgets'});
 
-module.exports = MessageClient;
+const callForPickup = createOrder(socket);
+
+socket.on('DELIVERED', thankTheDriver);
+
+setInterval(() => {
+  console.log('-----New Interval!!-----');
+  socket.emit('DELIVERED', thankTheDriver);
+  callForPickup();
+}, 3000);
+
