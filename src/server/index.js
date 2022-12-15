@@ -1,6 +1,6 @@
 'use strict';
 
-require('dotenv'.config());
+require('dotenv').config();
 const { Server } = require('socket.io');
 const PORT = process.env.PORT || 3002;
 
@@ -9,8 +9,6 @@ const server = new Server(PORT);
 
 const pickupQueue = new Queue();
 const deliveryQueue = new Queue();
-
-
 
 // create a namespace
 const caps = server.of('/caps');
@@ -24,22 +22,26 @@ caps.on('connection', (socket) => {
   //connect server to clients aka listen to clients
   // server.on('connection', (socket) => {
   //   console.log('Socket connected to Event Server!', socket.id);
-  socket.on('JOIN', (queueId) => {
+  socket.on('JOIN', (id) => {
     console.log('These are the rooms', socket.rooms);
-    socket.join(queueId);
-    console.log('Joined the room: ', queueId);
-    socket.emit('JOIN', queueId);
+    socket.join(id);
+    console.log('Joined the room: ', id);
+    socket.emit('JOIN', id);
   });  
 
   socket.on('RECEIVED', (payload) => {
-    let currentQueue = pickupQueue.read(payload.queueId);
+    let currentQueue = messageQueue.read(payload.id);
     if(!currentQueue){
-      let queueKey = pickupQueue.store(payload.queueId, new Queue());
-      currentQueue = pickupQueue.read(queueKey);
+      throw new Error('no vendor queue created');
     }
-    currentQueue.store(payload.orderId, payload);
-    
-    socket.broadcast.emit('PICKUP', payload); 
+    currentQueue.remove(payload.messageId);
+    // let currentQueue = pickupQueue.read(payload.queueId);
+    // if(!currentQueue){
+    //   let queueKey = pickupQueue.store(payload.queueId, new Queue());
+    //   currentQueue = pickupQueue.read(queueKey);
+    // }
+    // currentQueue.store(payload.orderId, payload);
+    // socket.broadcast.emit('PICKUP', payload); 
   });
 
   socket.on('IN-TRANSIT', (payload) => {
@@ -60,7 +62,14 @@ caps.on('connection', (socket) => {
       currentQueue = deliveryQueue.read(queueKey);
     }
     currentQueue.store(payload.messageId, payload);
-    socket.to(payload.vendorId).broadcast.emit('DELIVERED', payload);
+    socket.to(payload.vendorId).emit('DELIVERED', payload);
+
+    // if(currentQueue && currentQueue.data){
+    //   Object.keys(currentQueue.data).forEach(queueId => {
+    //     socket.emit('DELIVERED', currentQueue.read(queueId));
+    //     socket.to(payload.queueId).emit('RECEIVED', payload);
+    //   });
+    // }
   });
 
   socket.on('COMPLETED', (payload) => {
@@ -72,6 +81,19 @@ caps.on('connection', (socket) => {
   });
   
   socket.on('PICKUP', (payload) => {
+    console.log('hub: vendor has delivery', payload)
+
+    let currentQueue = messageQueue.read(payload.driverId);
+    if(!currentQueue){
+      let queueKey = messageQueue.store(payload.driverId, new Queue());
+      currentQueue = messageQueue.read(queueKey);
+    }
+    currentQueue.store(payload.messageId, payload);
+
+
+
+
+
     let orderId = currentQueue.remove(payload.queueId);
     let currentQueue = pickupQueue.read(payload.queueId);
     if(currentQueue && currentQueue.data){
@@ -81,15 +103,30 @@ caps.on('connection', (socket) => {
     }
   });
 
+  // socket.on('GET_ALL', (payload) => {
+  //   let currentQueue = messageQueue.read(payload.)
+
+
+  //   let orderId = currentQueue.remove(payload.queueId);
+  //   let currentQueue = pickupQueue.read(payload.queueId);
+  //   if(currentQueue && currentQueue.data){
+  //     Object.keys(currentQueue.data).forEach(queueId => {
+  //       socket.emit('GET_ALL', currentQueue.read(orderId));
+  //     });
+  //   }
+  // });
+
   socket.on('GET_ALL', (payload) => {
-    let orderId = currentQueue.remove(payload.queueId);
-    let currentQueue = pickupQueue.read(payload.queueId);
+    let currentQueue = messageQueue.read(payload.id)
     if(currentQueue && currentQueue.data){
-      Object.keys(currentQueue.data).forEach(queueId => {
-        socket.emit('GET_ALL', currentQueue.read(orderId));
+      Object.keys(currentQueue.data).forEach(message => {
+        if(payload.id !== 'rPS'){
+          socket.emit('DELIVERED', currentQueue.read(message));
+        } else {
+          socket.emit('PICKUP', currentQueue.read(message));
+        }
       });
-    }
-  });
+  }
 
   // socket.on('PICKUP', (payload) => {
   //   console.log(`Driver: order: ${payload.orderId} picked up`);

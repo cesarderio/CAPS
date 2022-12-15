@@ -5,6 +5,12 @@ const orderInTransit = (socket) =>(payload) => {
   // setTimeout(() => {
   console.log(`Driver: order: ${payload.orderId} picked up`);
   socket.emit('IN_TRANSIT', payload);
+  LET newPayload = {
+    id: payload.driverId,
+    messageId: 
+
+  }
+  socket.emit('RECEIVED', payload);
   // }, 2000);
 };
 
