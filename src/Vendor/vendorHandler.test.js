@@ -16,7 +16,7 @@ console.log = jest.fn();
 describe('Vendor', () => {
   it('emits order as expect', () => {
     const payload = {
-      store: '1-206-flowers',
+      store: 'Vendor',
       orderId: 'test123',
       customer: 'Raphael',
       address: 'home',
@@ -30,5 +30,6 @@ describe('Vendor', () => {
       orderId: 'test123',
       customer: 'Raphael'});
     expect(console.log).toHaveBeenCalledWith('Vendor: Thank you for delivering order: test123 to: Raphael');
+    expect(socket.emit).toHaveBeenCalledWith('DELIVERED', payload);
   });
 });

@@ -20,9 +20,9 @@ caps.on('connection', (socket) => {
     socket.join(id);
     console.log('Joined the room: ', id);
     socket.emit('JOIN', id);
-  });  
+  });
   // console.log('Socket connected to caps namespace', socket.id);
-  
+
   socket.on('PICKUP', (payload) => {
     // console.log('hub: vendor has delivery', payload)
     let currentQueue = messageQueue.read(payload.driverId);
@@ -144,7 +144,7 @@ caps.on('connection', (socket) => {
 //   currentQueue = pickupQueue.read(queueKey);
 // }
 // currentQueue.store(payload.orderId, payload);
-// socket.broadcast.emit('PICKUP', payload); 
+// socket.broadcast.emit('PICKUP', payload);
 // });
 // socket.on('GET_ALL', (payload) => {
 //   let currentQueue = messageQueue.read(payload.)
