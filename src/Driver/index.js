@@ -4,7 +4,10 @@ const { io } = require('socket.io-client');
 const socket = io('http://localhost:3001/caps');
 const { orderInTransit, deliveryHandler } = require('./driverHandler');
 
-socket.on('PICKUP_READY', driverHandler);
+socket.on('PICKUP', driverHandler);
+
+socket.emit('JOIN', 'rPS');
+socket.emit('GET_ALL', {id: 'rPS'});
 
 function driverHandler(payload) {
   setTimeout(() => {
